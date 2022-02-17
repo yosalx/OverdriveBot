@@ -2,6 +2,7 @@ package za.co.entelect.challenge;
 
 import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
+import za.co.entelect.challenge.enums.PowerUps;
 import za.co.entelect.challenge.enums.Terrain;
 
 import java.util.*;
@@ -89,4 +90,28 @@ public class Bot {
         return(opponent.position.block);
     }
 
+    private int getMyLane(){
+        return(myCar.position.lane);
+    }
+
+    private boolean isTurnValid(int direction, int currLane){
+        if(currLane == 1 && direction == 0){
+            return true;
+        }
+        else if(currLane == 4 && direction == 1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private boolean isPowerUpAvailable(PowerUps tocheck, PowerUps[] available){
+        for (PowerUps powerUp: available) {
+            if (powerUp.equals(tocheck)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
