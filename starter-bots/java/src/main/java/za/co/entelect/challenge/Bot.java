@@ -10,14 +10,13 @@ import java.util.*;
 import static java.lang.Math.max;
 
 public class Bot {
-
-    private static final int maxSpeed = 9;
     private List<Integer> directionList = new ArrayList<>();
 
     private Random random;
     private GameState gameState;
     private Car opponent;
     private Car myCar;
+    private int maxSpeed;
     private final static Command ACCELERATE = new AccelerateCommand();
     private final static Command BOOST = new BoostCommand();
     private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
@@ -34,42 +33,86 @@ public class Bot {
         this.gameState = gameState;
         this.myCar = gameState.player;
         this.opponent = gameState.opponent;
-
+        if (myCar.damage == 0){
+            this.maxSpeed = 15;
+        }
+        else if (myCar.damage == 1){
+            this.maxSpeed = 9;
+        }
+        else if (myCar.damage == 2){
+            this.maxSpeed = 8;
+        }
+        else if (myCar.damage == 3){
+            this.maxSpeed = 6;
+        }
+        else if (myCar.damage == 4){
+            this.maxSpeed = 3;
+        }
+        else if (myCar.damage == 5){
+            this.maxSpeed = 0;
+        }
         directionList.add(-1);
         directionList.add(1);
     }
 
     public Command run() {
-        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
         if (myCar.damage >= 5) {
             return new FixCommand();
-        }
-        if (blocks.contains(Terrain.MUD)) {
-            int i = random.nextInt(directionList.size());
-            return new ChangeLaneCommand(directionList.get(i));
         }
         return new AccelerateCommand();
     }
 
     /**
-     * Returns map of blocks and the objects in the for the current lanes, returns the amount of blocks that can be
-     * traversed at max speed.
+     * Return the damage of each lane based on the terrain
      **/
-    private List<Object> getBlocksInFront(int lane, int block) {
+    private int getLaneDamage(int lane, int block) {
         List<Lane[]> map = gameState.lanes;
-        List<Object> blocks = new ArrayList<>();
+        int damage = 0;
         int startBlock = map.get(0)[0].position.block;
 
         Lane[] laneList = map.get(lane - 1);
-        for (int i = max(block - startBlock, 0); i <= block - startBlock + Bot.maxSpeed; i++) {
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + myCar.speed; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
-
-            blocks.add(laneList[i].terrain);
-
+            else if (laneList[i].terrain == Terrain.OIL_SPILL){
+                damage += 2;
+            }
+            else if (laneList[i].terrain == Terrain.MUD){
+                damage += 2;
+            }
+            else if (laneList[i].terrain == Terrain.WALL){
+                damage += 4;
+            }
         }
-        return blocks;
+        return damage;
+    }
+
+    private int getLaneDamageBoosted(int lane, int block) {
+        List<Lane[]> map = gameState.lanes;
+        int damage = 0;
+        int startBlock = map.get(0)[0].position.block;
+
+        Lane[] laneList = map.get(lane - 1);
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + this.maxSpeed; i++) {
+            if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
+                break;
+            }
+            else if (laneList[i].terrain == Terrain.OIL_SPILL){
+                damage += 2;
+            }
+            else if (laneList[i].terrain == Terrain.MUD){
+                damage += 2;
+            }
+            else if (laneList[i].terrain == Terrain.WALL){
+                damage += 4;
+            }
+        }
+        return damage;
+    }
+
+    private boolean isLaneSafe(int lane, int block){
+        return(getLaneDamage(lane, block) == 0);
     }
 
     private boolean isOpponentBehind(){
