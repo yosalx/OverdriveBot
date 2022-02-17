@@ -17,7 +17,16 @@ public class Bot {
     private GameState gameState;
     private Car opponent;
     private Car myCar;
+    private final static Command ACCELERATE = new AccelerateCommand();
+    private final static Command BOOST = new BoostCommand();
+    private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
+    private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
+    private final static Command DECELERATE = new DecelerateCommand();
+    private final static Command D0_NOTHING = new DoNothingCommand();
+    private final static Command EMP = new EmpCommand();
     private final static Command FIX = new FixCommand();
+    private final static Command LIZARD = new LizardCommand();
+    private final static Command OIL = new OilCommand();;
 
     public Bot(Random random, GameState gameState) {
         this.random = random;
