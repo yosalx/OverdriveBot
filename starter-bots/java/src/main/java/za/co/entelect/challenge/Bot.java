@@ -56,10 +56,122 @@ public class Bot {
     }
 
     public Command run() {
-        if (myCar.damage >= 5) {
+        int LaneNow = myCar.position.lane;
+        int BlockNow = myCar.position.block;
+        PowerUps[] ready2 = myCar.powerups;
+        if (myCar.damage >= 4) {
             return new FixCommand();
         }
-        return new AccelerateCommand();
+        if (myCar.speed == this.maxSpeed){
+            if (isLaneSafe(LaneNow, BlockNow)){
+                usePowerUps();
+            }
+            else if (isTurnValid(-1, LaneNow) && isLaneSafe(LaneNow-1, BlockNow-1)){
+                return new ChangeLaneCommand(-1);
+            }
+            else if (isTurnValid(1, LaneNow) && isLaneSafe(LaneNow+1, BlockNow-1)){
+                return new ChangeLaneCommand(1);
+            }
+            else{
+                if (isPowerUpAvailable(PowerUps.LIZARD, ready2)){
+                    return LIZARD;
+                }
+                else{
+                    if (!isTurnValid(-1, LaneNow)){
+                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                        int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
+                        if (forwardDamage >= rightDamage){
+                            usePowerUps();                            
+                        }
+                        else{
+                            return new ChangeLaneCommand(1);
+                        }
+                    }
+                    else if (!isTurnValid(1, LaneNow)){
+                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                        int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
+                        if (forwardDamage >= leftDamage){
+                            usePowerUps();                            
+                        }
+                        else{
+                            return new ChangeLaneCommand(-1);
+                        }
+                    }
+                    else{
+                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                        int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
+                        int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
+                        if (forwardDamage >= leftDamage && forwardDamage >= rightDamage){
+                            usePowerUps();                            
+                        }
+                        else if (leftDamage >= forwardDamage && leftDamage >= rightDamage){
+                            return new ChangeLaneCommand(-1);
+                        }
+                        else{
+                            return new ChangeLaneCommand(1);
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            if (isPowerUpAvailable(PowerUps.BOOST, ready2) && isLaneSafeBoosted(LaneNow, BlockNow)){
+                return BOOST;
+            }
+            else{
+                if (isLaneSafe(LaneNow, BlockNow)){
+                    usePowerUps();
+                }
+                else if (isTurnValid(-1, LaneNow) && isLaneSafe(LaneNow-1, BlockNow-1)){
+                    return new ChangeLaneCommand(-1);
+                }
+                else if (isTurnValid(1, LaneNow) && isLaneSafe(LaneNow+1, BlockNow-1)){
+                    return new ChangeLaneCommand(1);
+                }
+                else{
+                    if (isPowerUpAvailable(PowerUps.LIZARD, ready2)){
+                        return LIZARD;
+                    }
+                    else{
+                        if (!isTurnValid(-1, LaneNow)){
+                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                            int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
+                            if (forwardDamage >= rightDamage){
+                                usePowerUps();                            
+                            }
+                            else{
+                                return new ChangeLaneCommand(1);
+                            }
+                        }
+                        else if (!isTurnValid(1, LaneNow)){
+                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                            int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
+                            if (forwardDamage >= leftDamage){
+                                usePowerUps();                            
+                            }
+                            else{
+                                return new ChangeLaneCommand(-1);
+                            }
+                        }
+                        else{
+                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
+                            int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
+                            int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
+                            if (forwardDamage >= leftDamage && forwardDamage >= rightDamage){
+                                usePowerUps();                            
+                            }
+                            else if (leftDamage >= forwardDamage && leftDamage >= rightDamage){
+                                return new ChangeLaneCommand(-1);
+                            }
+                            else{
+                                return new ChangeLaneCommand(1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return D0_NOTHING;
     }
 
     /**
@@ -115,6 +227,10 @@ public class Bot {
         return(getLaneDamage(lane, block) == 0);
     }
 
+    private boolean isLaneSafeBoosted(int lane, int block){
+        return(getLaneDamageBoosted(lane, block) == 0);
+    }
+
     private boolean isOpponentBehind(){
         //Check whether opponent is behind myCar or not
         if(opponent.position.block < myCar.position.block){
@@ -138,14 +254,14 @@ public class Bot {
     }
 
     private boolean isTurnValid(int direction, int currLane){
-        if(currLane == 1 && direction == 0){
-            return true;
+        if(currLane == 1 && direction == -1){
+            return false;
         }
         else if(currLane == 4 && direction == 1){
-            return true;
+            return false;
         }
         else{
-            return false;
+            return true;
         }
     }
 
@@ -178,5 +294,21 @@ public class Bot {
 
     private Command UseTweet(){
         return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
+    }
+
+    private Command usePowerUps(){
+        PowerUps[] ready = myCar.powerups;
+        if (isPowerUpAvailable(PowerUps.EMP,ready) && (getMyLane() == opponentBlockPosition())){
+            return EMP;
+        }
+        if (isPowerUpAvailable(PowerUps.TWEET, ready)){
+            return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
+        }
+        if (isPowerUpAvailable(PowerUps.OIL, ready) && isOpponentBehind()){
+            return OIL;
+        }
+        else{
+            return ACCELERATE;
+        }
     }
 }
