@@ -27,7 +27,7 @@ public class Bot {
     private final static Command EMP = new EmpCommand();
     private final static Command FIX = new FixCommand();
     private final static Command LIZARD = new LizardCommand();
-    private final static Command OIL = new OilCommand();;
+    private final static Command OIL = new OilCommand();
 
     public Bot(Random random, GameState gameState) {
         this.random = random;
@@ -113,5 +113,27 @@ public class Bot {
             }
         }
         return false;
+    }
+
+    private Command UseOil(){
+        if (isOpponentBehind()){
+            return OIL;
+        }
+        else{
+            return D0_NOTHING;
+        }
+    }
+
+    private Command UseEMP(){
+        if (getMyLane() == opponentBlockPosition()){
+            return EMP;
+        }
+        else{
+            return D0_NOTHING;
+        }
+    }
+
+    private Command UseTweet(){
+        return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
     }
 }
