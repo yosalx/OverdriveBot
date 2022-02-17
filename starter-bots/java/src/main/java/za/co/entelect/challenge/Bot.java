@@ -60,7 +60,7 @@ public class Bot {
         int BlockNow = myCar.position.block;
         PowerUps[] ready2 = myCar.powerups;
         if (myCar.damage >= 4) {
-            return new FixCommand();
+            return FIX;
         }
         if (myCar.speed == this.maxSpeed){
             if (isLaneSafe(LaneNow, BlockNow)){
@@ -274,6 +274,7 @@ public class Bot {
         return false;
     }
 
+    /*
     private Command UseOil(){
         if (isOpponentBehind()){
             return OIL;
@@ -295,7 +296,7 @@ public class Bot {
     private Command UseTweet(){
         return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
     }
-
+    */
     private Command usePowerUps(){
         PowerUps[] ready = myCar.powerups;
         if (isPowerUpAvailable(PowerUps.EMP,ready) && (getMyLane() == opponentBlockPosition())){
