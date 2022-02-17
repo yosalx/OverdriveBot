@@ -62,4 +62,22 @@ public class Bot {
         return blocks;
     }
 
+    private boolean isOpponentBehind(){
+        //Check whether opponent is behind myCar or not
+        if(opponent.position.block < myCar.position.block){
+            return true;
+        }
+        return false;
+    }
+
+    private int opponentLanePosition(){
+        //Check opponent car's lane
+        return(opponent.position.lane);
+    }
+
+    private int opponentBlockPosition(){
+        //Check opponent car's block
+        return(opponent.position.block);
+    }
+
 }
