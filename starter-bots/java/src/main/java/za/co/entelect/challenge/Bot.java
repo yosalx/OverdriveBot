@@ -37,6 +37,7 @@ public class Bot {
         this.gameState = gameState;
         this.myCar = gameState.player;
         this.opponent = gameState.opponent;
+        //speedstate based on the damage taken
         if (myCar.damage == 0){
             this.maxSpeed = 15;
         }
@@ -60,32 +61,37 @@ public class Bot {
     }
 
     public Command run() {
-        int LaneNow = myCar.position.lane;
-        int BlockNow = myCar.position.block;
-        PowerUps[] ready2 = myCar.powerups;
-        if (myCar.damage >= 4) {
+        int LaneNow = myCar.position.lane; // lane position of the car
+        int BlockNow = myCar.position.block; // block position of the car
+        //PowerUps[] ready2 = myCar.powerups;
+        if (myCar.damage >= 2) { //immediately fix the car when the damage accumulated reached 2
             return FIX;
         }
         if (myCar.speed == this.maxSpeed){
+            // car is already on the maxspeed possible
             if (isLaneSafe(LaneNow, BlockNow)){
-                usePowerUps();
+                usePowerUps(); // if the lane forward is safe without any obstacle, attemp to use powerup if available
             }
             else if (isTurnValid(-1, LaneNow) && isLaneSafe(LaneNow-1, BlockNow-1)){
-                return TURN_LEFT;
+                return TURN_LEFT; //if not check whether the car could turn left and the left lane is safe
             }
             else if (isTurnValid(1, LaneNow) && isLaneSafe(LaneNow+1, BlockNow-1)){
-                return TURN_RIGHT;
+                return TURN_RIGHT; //if not check whether the car could turn right and the left lane is safe
             }
             else{
+                // if no lane is save
                 if (isPowerUpAvailable(PowerUps.LIZARD)){
-                    return LIZARD;
+                    return LIZARD; //attempt to use lizard if available 
                 }
                 else{
+                    // if lizard is not available
                     if (!isTurnValid(-1, LaneNow) || !isTurnValid(1, LaneNow)){
+                        // check whether the car able to turn left or right
                         if (ForwardDamageComparison(LaneNow, BlockNow, !isTurnValid(-1, LaneNow), !isTurnValid(1, LaneNow), false)){
+                            // compare the damage each lane have
                             usePowerUps();
                         }
-                        else{
+                        else{ // turn right or left if the damage is the smallest
                             if (!isTurnValid(-1, LaneNow)){
                                 return TURN_RIGHT;
                             }
@@ -108,11 +114,13 @@ public class Bot {
                 }
             }
         }
-        else{
+        else{ // car is not on the maxspeed possible
             if (isPowerUpAvailable(PowerUps.BOOST) && isLaneSafeBoosted(LaneNow, BlockNow)){
-                return BOOST;
+                return BOOST; // attempt to use boost if available
             }
-            else{
+            else{ // boost is not available
+
+                // from line 122 to line 158 are basically the repetion of the code above
                 if (isLaneSafe(LaneNow, BlockNow)){
                     usePowerUps();
                 }
@@ -185,10 +193,9 @@ public class Bot {
     }
 
     private boolean ForwardDamageComparison(int lane, int block, boolean left, boolean right, boolean leftPriority){
-        //idk what this is, tapi aku taruh di function biar lebih gampang nge read nya
-        //lane dan block adalah posisinya
-        //boolean left/right adalah mau membandingkan damage bagian mana terhadap forward
-        //leftPriority artinya left damage yg dibandingkan thd forward nya, bukan sebaliknya
+        //lane and block based on the car position
+        //boolean left/right are to be compared to the damage of the forward lane
+        //leftPriority : left damage to be compared to the forward damage
         int forwardDamage = getLaneDamage(lane, block);
         int rightOrLeftDamage = left? getLaneDamage(lane+1, block-1) : getLaneDamage(lane-1, block-1);
         if (left && right){
@@ -205,6 +212,9 @@ public class Bot {
 
     }
 
+    /**
+     * Return the damage of each lane based on the terrain; used on special case when the car will be boosted
+     **/
     private int getLaneDamageBoosted(int lane, int block) {
         List<Lane[]> map = gameState.lanes;
         int damage = 0;
@@ -228,14 +238,17 @@ public class Bot {
         return damage;
     }
 
+    // to check whether the lane is safe from any obstacle such as mud, oil spill and wall
     private boolean isLaneSafe(int lane, int block){
         return(getLaneDamage(lane, block) == 0);
     }
 
+    // used on special case when the car will be boosted
     private boolean isLaneSafeBoosted(int lane, int block){
         return(getLaneDamageBoosted(lane, block) == 0);
     }
 
+    // to check whether the opponent is behind or not
     private boolean isOpponentBehind(){
         //Check whether opponent is behind myCar or not
         if(opponent.position.block < myCar.position.block){
@@ -244,20 +257,24 @@ public class Bot {
         return false;
     }
 
+    // to get opponent's lane 
     private int opponentLanePosition(){
         //Check opponent car's lane
         return(opponent.position.lane);
     }
 
+    // to get opponent's block position
     private int opponentBlockPosition(){
         //Check opponent car's block
         return(opponent.position.block);
     }
 
+    // to get the car lane position
     private int getMyLane(){
         return(myCar.position.lane);
     }
 
+    // to check whether the car is able to turn left or right
     private boolean isTurnValid(int direction, int currLane){
         if(currLane == 1 && direction == -1){
             return false;
@@ -270,6 +287,7 @@ public class Bot {
         }
     }
 
+    // to check whether certain powerup is available
     private boolean isPowerUpAvailable(PowerUps tocheck){
         for (PowerUps powerUp: myCar.powerups) {
             if (powerUp.equals(tocheck)) {
@@ -279,6 +297,7 @@ public class Bot {
         return false;
     }
 
+    // to check and use powerups if available on a certain priority
     private Command usePowerUps(){
         if (isPowerUpAvailable(PowerUps.EMP) && (getMyLane() == opponentBlockPosition())){
             return EMP;
@@ -293,6 +312,4 @@ public class Bot {
             return ACCELERATE;
         }
     }
-
-
 }
