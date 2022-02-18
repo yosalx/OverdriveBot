@@ -1,6 +1,6 @@
-# Tugas Besar 1 Strategi Algoritma -  Pemanfaatan Algoritma Greedy Dalam Aplikasi Permainan “OVERDRIVE”
+# Tugas Besar 1 Strategi Algoritma 
 
-### Program Implementasi Algortima Greedy dalam Bot untuk Memenangkan Permainan "OVERDRIVE"
+### Pemanfaatan Algoritma Greedy Dalam Aplikasi Permainan “Overdrive”
 
 Safiq Faray / 13519145
 Kevin Roni / 13520114
