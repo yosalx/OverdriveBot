@@ -27,6 +27,10 @@ public class Bot {
     private final static Command FIX = new FixCommand();
     private final static Command LIZARD = new LizardCommand();
     private final static Command OIL = new OilCommand();
+    private Command TWEET(int lane, int block){
+        return new TweetCommand(lane, block);
+    }
+
 
     public Bot(Random random, GameState gameState) {
         this.random = random;
@@ -67,55 +71,45 @@ public class Bot {
                 usePowerUps();
             }
             else if (isTurnValid(-1, LaneNow) && isLaneSafe(LaneNow-1, BlockNow-1)){
-                return new ChangeLaneCommand(-1);
+                return TURN_LEFT;
             }
             else if (isTurnValid(1, LaneNow) && isLaneSafe(LaneNow+1, BlockNow-1)){
-                return new ChangeLaneCommand(1);
+                return TURN_RIGHT;
             }
             else{
-                if (isPowerUpAvailable(PowerUps.LIZARD, ready2)){
+                if (isPowerUpAvailable(PowerUps.LIZARD)){
                     return LIZARD;
                 }
                 else{
-                    if (!isTurnValid(-1, LaneNow)){
-                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                        int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
-                        if (forwardDamage >= rightDamage){
-                            usePowerUps();                            
+                    if (!isTurnValid(-1, LaneNow) || !isTurnValid(1, LaneNow)){
+                        if (ForwardDamageComparison(LaneNow, BlockNow, !isTurnValid(-1, LaneNow), !isTurnValid(1, LaneNow), false)){
+                            usePowerUps();
                         }
                         else{
-                            return new ChangeLaneCommand(1);
-                        }
-                    }
-                    else if (!isTurnValid(1, LaneNow)){
-                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                        int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
-                        if (forwardDamage >= leftDamage){
-                            usePowerUps();                            
-                        }
-                        else{
-                            return new ChangeLaneCommand(-1);
+                            if (!isTurnValid(-1, LaneNow)){
+                                return TURN_RIGHT;
+                            }
+                            else{
+                                return TURN_LEFT;
+                            }
                         }
                     }
                     else{
-                        int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                        int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
-                        int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
-                        if (forwardDamage >= leftDamage && forwardDamage >= rightDamage){
-                            usePowerUps();                            
+                        if (ForwardDamageComparison(LaneNow, BlockNow, true, true, false)){
+                            usePowerUps();
                         }
-                        else if (leftDamage >= forwardDamage && leftDamage >= rightDamage){
-                            return new ChangeLaneCommand(-1);
+                        else if (ForwardDamageComparison(LaneNow, BlockNow, true, true, true)){
+                            return TURN_LEFT;
                         }
                         else{
-                            return new ChangeLaneCommand(1);
+                            return TURN_RIGHT;
                         }
                     }
                 }
             }
         }
         else{
-            if (isPowerUpAvailable(PowerUps.BOOST, ready2) && isLaneSafeBoosted(LaneNow, BlockNow)){
+            if (isPowerUpAvailable(PowerUps.BOOST) && isLaneSafeBoosted(LaneNow, BlockNow)){
                 return BOOST;
             }
             else{
@@ -123,48 +117,38 @@ public class Bot {
                     usePowerUps();
                 }
                 else if (isTurnValid(-1, LaneNow) && isLaneSafe(LaneNow-1, BlockNow-1)){
-                    return new ChangeLaneCommand(-1);
+                    return TURN_LEFT;
                 }
                 else if (isTurnValid(1, LaneNow) && isLaneSafe(LaneNow+1, BlockNow-1)){
-                    return new ChangeLaneCommand(1);
+                    return TURN_RIGHT;
                 }
                 else{
-                    if (isPowerUpAvailable(PowerUps.LIZARD, ready2)){
+                    if (isPowerUpAvailable(PowerUps.LIZARD)){
                         return LIZARD;
                     }
                     else{
-                        if (!isTurnValid(-1, LaneNow)){
-                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                            int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
-                            if (forwardDamage >= rightDamage){
-                                usePowerUps();                            
+                        if (!isTurnValid(-1, LaneNow) || !isTurnValid(1, LaneNow)){
+                            if (ForwardDamageComparison(LaneNow, BlockNow, !isTurnValid(-1, LaneNow), !isTurnValid(1, LaneNow), false)){
+                                usePowerUps();
                             }
                             else{
-                                return new ChangeLaneCommand(1);
-                            }
-                        }
-                        else if (!isTurnValid(1, LaneNow)){
-                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                            int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
-                            if (forwardDamage >= leftDamage){
-                                usePowerUps();                            
-                            }
-                            else{
-                                return new ChangeLaneCommand(-1);
+                                if (!isTurnValid(-1, LaneNow)){
+                                    return TURN_RIGHT;
+                                }
+                                else{
+                                    return TURN_LEFT;
+                                }
                             }
                         }
                         else{
-                            int forwardDamage = getLaneDamage(LaneNow, BlockNow);
-                            int leftDamage = getLaneDamage(LaneNow-1, BlockNow-1);
-                            int rightDamage = getLaneDamage(LaneNow+1, BlockNow-1);
-                            if (forwardDamage >= leftDamage && forwardDamage >= rightDamage){
-                                usePowerUps();                            
+                            if (ForwardDamageComparison(LaneNow, BlockNow, true, true, false)){
+                                usePowerUps();
                             }
-                            else if (leftDamage >= forwardDamage && leftDamage >= rightDamage){
-                                return new ChangeLaneCommand(-1);
+                            else if (ForwardDamageComparison(LaneNow, BlockNow, true, true, true)){
+                                return TURN_LEFT;
                             }
                             else{
-                                return new ChangeLaneCommand(1);
+                                return TURN_RIGHT;
                             }
                         }
                     }
@@ -198,6 +182,27 @@ public class Bot {
             }
         }
         return damage;
+    }
+
+    private boolean ForwardDamageComparison(int lane, int block, boolean left, boolean right, boolean leftPriority){
+        //idk what this is, tapi aku taruh di function biar lebih gampang nge read nya
+        //lane dan block adalah posisinya
+        //boolean left/right adalah mau membandingkan damage bagian mana terhadap forward
+        //leftPriority artinya left damage yg dibandingkan thd forward nya, bukan sebaliknya
+        int forwardDamage = getLaneDamage(lane, block);
+        int rightOrLeftDamage = left? getLaneDamage(lane+1, block-1) : getLaneDamage(lane-1, block-1);
+        if (left && right){
+            int rightDamage = getLaneDamage(lane+1, block-1);
+            int leftDamage = getLaneDamage(lane-1, block-1);
+            if (leftPriority){
+                return leftDamage >= forwardDamage && leftDamage >= rightDamage;
+            }
+            else{
+                return forwardDamage >= leftDamage && forwardDamage >= rightDamage;
+            }
+        }
+        return forwardDamage >= rightOrLeftDamage;
+
     }
 
     private int getLaneDamageBoosted(int lane, int block) {
@@ -265,8 +270,8 @@ public class Bot {
         }
     }
 
-    private boolean isPowerUpAvailable(PowerUps tocheck, PowerUps[] available){
-        for (PowerUps powerUp: available) {
+    private boolean isPowerUpAvailable(PowerUps tocheck){
+        for (PowerUps powerUp: myCar.powerups) {
             if (powerUp.equals(tocheck)) {
                 return true;
             }
@@ -274,42 +279,20 @@ public class Bot {
         return false;
     }
 
-    /*
-    private Command UseOil(){
-        if (isOpponentBehind()){
-            return OIL;
-        }
-        else{
-            return D0_NOTHING;
-        }
-    }
-
-    private Command UseEMP(){
-        if (getMyLane() == opponentBlockPosition()){
-            return EMP;
-        }
-        else{
-            return D0_NOTHING;
-        }
-    }
-
-    private Command UseTweet(){
-        return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
-    }
-    */
     private Command usePowerUps(){
-        PowerUps[] ready = myCar.powerups;
-        if (isPowerUpAvailable(PowerUps.EMP,ready) && (getMyLane() == opponentBlockPosition())){
+        if (isPowerUpAvailable(PowerUps.EMP) && (getMyLane() == opponentBlockPosition())){
             return EMP;
         }
-        if (isPowerUpAvailable(PowerUps.TWEET, ready)){
-            return new TweetCommand(opponentLanePosition(), opponentBlockPosition());
+        if (isPowerUpAvailable(PowerUps.TWEET)){
+            return TWEET(opponentLanePosition(), opponentBlockPosition());
         }
-        if (isPowerUpAvailable(PowerUps.OIL, ready) && isOpponentBehind()){
+        if (isPowerUpAvailable(PowerUps.OIL) && isOpponentBehind()){
             return OIL;
         }
         else{
             return ACCELERATE;
         }
     }
+
+
 }

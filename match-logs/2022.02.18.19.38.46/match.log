@@ -1,0 +1,9 @@
+19:38:46,800 INFO Instantiating local player A - Coffee with bot ./starter-bots/java/target
+19:38:46,808 INFO Instantiating local player B - CoffeeRef with bot ./reference-bot/java/target
+19:38:46,816 ERROR Exception during match execution
+java.io.FileNotFoundException: Could not find JAVA bot file for John Doe(CoffeeRef)
+	at za.co.entelect.challenge.player.bootstrapper.PlayerBootstrapper.parsePlayer(PlayerBootstrapper.java:82) ~[game-runner-jar-with-dependencies.jar:?]
+	at za.co.entelect.challenge.player.bootstrapper.PlayerBootstrapper.parsePlayer(PlayerBootstrapper.java:62) ~[game-runner-jar-with-dependencies.jar:?]
+	at za.co.entelect.challenge.player.bootstrapper.PlayerBootstrapper.loadPlayers(PlayerBootstrapper.java:54) ~[game-runner-jar-with-dependencies.jar:?]
+	at za.co.entelect.challenge.engine.bootstrapper.GameBootstrapper.run(GameBootstrapper.java:69) [game-runner-jar-with-dependencies.jar:?]
+	at za.co.entelect.challenge.engine.bootstrapper.GameBootstrapper.main(GameBootstrapper.java:49) [game-runner-jar-with-dependencies.jar:?]
