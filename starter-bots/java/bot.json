@@ -1,7 +1,7 @@
 {
-	"author": "John Doe",
-	"email": "John.Doe@example.com",
-	"nickName": "Coffee",
+	"author": "Hop On Valorant",
+	"email": "13519145@std.stei.itb.ac.id",
+	"nickName": "Hop On Valorant",
 	"botLocation": "/target",
 	"botFileName": "java-starter-bot-jar-with-dependencies.jar",
 	"botLanguage": "java"
