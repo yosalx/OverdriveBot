@@ -31,4 +31,4 @@ Program ini mengimplementasikan Greedy by Speed dalam pembuatan bot nya. Greedy 
 #### Ubah game-runner-config.json di folder starter-pack menjadi
   "player-a": "./starter-bots/java",
   "player-b": "./reference-bot/java",
-#### Jalankan file run.bat
+#### 5. Jalankan file run.bat
