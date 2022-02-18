@@ -11,8 +11,8 @@ Program ini mengimplementasikan Greedy by Speed dalam pembuatan bot nya. Greedy 
 
 ## Requirements
 
-Java (minimal Java 8)
-Apache Maven / IntelIiJ IDEA
+### Java (minimal Java 8)
+### Apache Maven / IntelIiJ IDEA
 
 ## Directory
 
