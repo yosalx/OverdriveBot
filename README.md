@@ -4,7 +4,7 @@
 ##### Kevin Roni / 13520114
 ##### Yoseph A.S. / 13520141
 
-## Deskripsi Program
+## Overview
 This bot program is implemented using Greedy by Speed Algorithm. Greedy by speed works by ranking the possible speed of each command for the next round. This method will analyze the player current situation and also analyze command(s) that could give the player the maximum speed possible for the next round.
 
 ## Requirements
